@@ -1,7 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/slices/auth";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-  return <div>Dashboardd</div>;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.user);
+
+  console.log("user", user);
+
+  const onSubmit = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
+
+  return (
+    <div>
+      <h1>dasboard</h1>
+      <button onClick={onSubmit}>logout</button>
+      <button onClick={() => navigate("/profile")}>Profile</button>
+    </div>
+  );
 };
 
 export default Dashboard;

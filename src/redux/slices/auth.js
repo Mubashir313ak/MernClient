@@ -34,6 +34,7 @@ const authSlice = createSlice({
     token: localStorage.getItem("token") || null,
     isLoading: false,
     error: null,
+    isAuthenticated: !!localStorage.getItem("token"),
   },
   reducers: {
     logout: (state) => {
@@ -50,9 +51,10 @@ const authSlice = createSlice({
         localStorage.setItem("token", action.payload.token);
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.user = action.payload.user; // Adjust based on your API response
-        state.token = action.payload.token; // Adjust based on your API response
+        state.user = action.payload.user; // Ensure this matches your API response structure
+        state.token = action.payload.token; // Ensure this matches your API response structure
         localStorage.setItem("token", action.payload.token);
+        state.isAuthenticated = true; // Update authentication state
       })
       .addCase(login.rejected, (state, action) => {
         state.error = action.payload; // Use payload for error message

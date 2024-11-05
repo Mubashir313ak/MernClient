@@ -7,6 +7,7 @@ const SignUp = () => {
     name: "",
     email: "",
     password: "",
+    whatsappNumber: "",
   });
   const dispatch = useDispatch();
 
@@ -37,6 +38,12 @@ const SignUp = () => {
         type="password"
         name="password"
         placeholder="Password"
+        onChange={handleChange}
+      />
+      <input
+        type="number"
+        name="whatsappNumber"
+        placeholder="Whatsapp"
         onChange={handleChange}
       />
       <button type="submit">Sign Up</button>
