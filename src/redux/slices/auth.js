@@ -3,18 +3,7 @@ import axios from "axios";
 
 const API_URL = "http://localhost:5000/api/users";
 
-export const signup = createAsyncThunk(
-  "auth/signup",
-  async (userData, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(`${API_URL}/signup`, userData);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response.data);
-    }
-  }
-);
-
+// Async thunk for login
 export const login = createAsyncThunk(
   "auth/login",
   async (userData, { rejectWithValue }) => {
@@ -27,37 +16,46 @@ export const login = createAsyncThunk(
   }
 );
 
+// Retrieve user and token from localStorage if available
+const storedUser = JSON.parse(localStorage.getItem("user"));
+const storedToken = localStorage.getItem("token");
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null,
-    token: localStorage.getItem("token") || null,
+    user: storedUser || null,
+    token: storedToken || null,
     isLoading: false,
     error: null,
-    isAuthenticated: !!localStorage.getItem("token"),
+    isAuthenticated: !!storedToken,
   },
   reducers: {
     logout: (state) => {
       state.user = null;
       state.token = null;
+      state.isAuthenticated = false;
+      localStorage.removeItem("user");
       localStorage.removeItem("token");
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(signup.fulfilled, (state, action) => {
-        state.user = action.payload.user; // Adjust based on your API response
-        state.token = action.payload.token; // Adjust based on your API response
-        localStorage.setItem("token", action.payload.token);
+      .addCase(login.pending, (state) => {
+        state.isLoading = true;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.user = action.payload.user; // Ensure this matches your API response structure
-        state.token = action.payload.token; // Ensure this matches your API response structure
+        state.isLoading = false;
+        state.user = action.payload.user; // Set the user info
+        state.token = action.payload.token; // Set the token
+        state.isAuthenticated = true;
+
+        // Persist user and token in localStorage
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
         localStorage.setItem("token", action.payload.token);
-        state.isAuthenticated = true; // Update authentication state
       })
       .addCase(login.rejected, (state, action) => {
-        state.error = action.payload; // Use payload for error message
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
 });

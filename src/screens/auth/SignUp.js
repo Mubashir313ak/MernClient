@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { signup } from "../../redux/slices/auth";
+import { useNavigate } from "react-router-dom";
+import { SignUpApi } from "../../services/auth";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -9,17 +9,25 @@ const SignUp = () => {
     password: "",
     whatsappNumber: "",
   });
-  const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    const body = {
+      formData: formData,
+    };
     e.preventDefault();
-    dispatch(signup(formData));
+    try {
+      const result = await SignUpApi(body);
+      if (result) {
+        console.log("Signup successful:", result);
+        navigate("/login"); // Redirect to login or another page upon success
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+    }
   };
-
   return (
     <form onSubmit={handleSubmit}>
       <input

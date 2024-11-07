@@ -14,9 +14,15 @@ import EmailIcon from "@mui/icons-material/Email";
 import { useSelector } from "react-redux";
 
 const ProfilePage = () => {
-  const user = useSelector((state) => state.auth);
-  const { name, email, picture, whatsappNumber } = user?.user?.user;
-  console.log("user", user);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  if (!user) {
+    return (
+      <Typography variant="h6">Please log in to view your profile.</Typography>
+    );
+  }
+
+  const { name, email, picture, whatsappNumber } = user.user;
+  console.log("isAuthenticated", isAuthenticated, user.user.name);
 
   // WhatsApp link with international format
   const whatsappLink = `https://wa.me/${whatsappNumber}`;
